@@ -50,9 +50,31 @@ test.describe('Section L: Accessibility & Keyboard Navigation', () => {
     await expect(modal).toHaveAttribute('aria-modal', 'true');
     await expect(modal).toHaveAttribute('aria-labelledby', 'qg-upload-modal-title');
 
-    // Assert initial focus is automatically trapped inside the modal (Fails -> BUG-001)
-    const isInitialFocusInsideModal = await page.evaluate(() => !!document.activeElement?.closest('.qg-modal-card'));
-    expect(isInitialFocusInsideModal).toBe(true);
+    // 1. Initial focus automatically moves to Title input
+    const initialFocusedId = await page.evaluate(() => document.activeElement?.id);
+    expect(initialFocusedId).toBe('up-title');
+
+    // 2. Tab focus containment inside modal
+    for (let i = 0; i < 12; i++) {
+      await page.keyboard.press('Tab');
+      const isInside = await page.evaluate(() => !!document.activeElement?.closest('.qg-modal-card'));
+      expect(isInside).toBe(true);
+    }
+
+    // 3. Shift+Tab reverse focus containment
+    for (let i = 0; i < 12; i++) {
+      await page.keyboard.press('Shift+Tab');
+      const isInside = await page.evaluate(() => !!document.activeElement?.closest('.qg-modal-card'));
+      expect(isInside).toBe(true);
+    }
+
+    // 4. Escape key closes modal
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.qg-modal-overlay')).toHaveCount(0);
+
+    // 5. Focus restored to Add document trigger button
+    const restoredFocusedText = await page.evaluate(() => document.activeElement?.textContent?.trim());
+    expect(restoredFocusedText).toContain('Add document');
   });
 
   test('TC-A11Y-004: Verify HTML label association', async ({ page }) => {

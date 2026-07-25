@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Search, ShieldCheck, UploadCloud, X } from 'lucide-react';
 import { EMPTY_UPLOAD_FORM } from '../data/sampleData.jsx';
 import { makeId } from '../utils/qualiguide.js';
@@ -7,13 +7,56 @@ function UploadDocumentModal({ onClose, onAdd }) {
   const [form, setForm] = useState(EMPTY_UPLOAD_FORM);
   const [errors, setErrors] = useState({});
   const [justAdded, setJustAdded] = useState(false);
+  const modalRef = useRef(null);
 
   useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key === 'Escape') onClose();
+    const previousActiveElement = document.activeElement;
+
+    // Focus the title input automatically on modal mount
+    const firstInput = modalRef.current?.querySelector('#up-title') || modalRef.current?.querySelector('button, input, select, textarea');
+    if (firstInput) {
+      firstInput.focus();
     }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusables = Array.from(
+          modalRef.current.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => !el.disabled && el.tabIndex !== -1);
+
+        if (focusables.length === 0) return;
+
+        const firstEl = focusables[0];
+        const lastEl = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl || !modalRef.current.contains(document.activeElement)) {
+            lastEl.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastEl || !modalRef.current.contains(document.activeElement)) {
+            firstEl.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    }
+
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        previousActiveElement.focus();
+      }
+    };
   }, [onClose]);
 
   function updateField(key, value) {
@@ -61,6 +104,7 @@ function UploadDocumentModal({ onClose, onAdd }) {
     <div className="qg-modal-overlay" onClick={onClose}>
       <div
         className="qg-modal-card"
+        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
