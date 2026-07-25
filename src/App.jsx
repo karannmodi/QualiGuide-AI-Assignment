@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AlertTriangle, X } from 'lucide-react';
 import { DOCUMENTS, PERSONAS } from './data/sampleData.jsx';
 import RoleSelector from './components/RoleSelector.jsx';
 import Sidebar from './components/Sidebar.jsx';
@@ -37,41 +38,42 @@ export default function App() {
   const [view, setView] = useState(() => readStoredValue(STORAGE_KEYS.view, 'dashboard'));
   const [feedbackEntries, setFeedbackEntries] = useState(() => readStoredArray(STORAGE_KEYS.feedback, []));
   const [documents, setDocuments] = useState(() => readStoredArray(STORAGE_KEYS.documents, DOCUMENTS));
+  const [storageWarning, setStorageWarning] = useState(false);
+
+  function safeSetItem(key, value) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      setStorageWarning(true);
+    }
+  }
+
+  function safeRemoveItem(key) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      setStorageWarning(true);
+    }
+  }
 
   useEffect(() => {
-    try {
-      if (persona) {
-        window.localStorage.setItem(STORAGE_KEYS.personaId, JSON.stringify(persona.id));
-      } else {
-        window.localStorage.removeItem(STORAGE_KEYS.personaId);
-      }
-    } catch {
-      // The prototype still works in memory if browser storage is unavailable.
+    if (persona) {
+      safeSetItem(STORAGE_KEYS.personaId, persona.id);
+    } else {
+      safeRemoveItem(STORAGE_KEYS.personaId);
     }
   }, [persona]);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.view, JSON.stringify(view));
-    } catch {
-      // The prototype still works in memory if browser storage is unavailable.
-    }
+    safeSetItem(STORAGE_KEYS.view, view);
   }, [view]);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.documents, JSON.stringify(documents));
-    } catch {
-      // The prototype still works in memory if browser storage is unavailable.
-    }
+    safeSetItem(STORAGE_KEYS.documents, documents);
   }, [documents]);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.feedback, JSON.stringify(feedbackEntries));
-    } catch {
-      // The prototype still works in memory if browser storage is unavailable.
-    }
+    safeSetItem(STORAGE_KEYS.feedback, feedbackEntries);
   }, [feedbackEntries]);
 
   function submitFeedback(entry) {
@@ -96,7 +98,7 @@ export default function App() {
     try {
       Object.values(STORAGE_KEYS).forEach((key) => window.localStorage.removeItem(key));
     } catch {
-      // State is still reset below if browser storage is unavailable.
+      setStorageWarning(true);
     }
 
     setDocuments([...DOCUMENTS]);
@@ -108,6 +110,17 @@ export default function App() {
   if (!persona) {
     return (
       <div className="qg-root" style={{ display: 'block' }}>
+        {storageWarning && (
+          <div className="qg-storage-warning-banner" role="alert">
+            <AlertTriangle size={15} style={{ flexShrink: 0 }} />
+            <span>
+              Browser storage is restricted or full. Your changes will work during this session, but may not be saved after you refresh.
+            </span>
+            <button className="qg-storage-warning-dismiss" onClick={() => setStorageWarning(false)} aria-label="Dismiss warning">
+              <X size={14} />
+            </button>
+          </div>
+        )}
         <RoleSelector onSelect={(selectedPersona) => {
           setPersona(selectedPersona);
           setView('dashboard');
@@ -129,6 +142,17 @@ export default function App() {
         onResetDemoData={resetDemoData}
       />
       <div className="qg-main">
+        {storageWarning && (
+          <div className="qg-storage-warning-banner" role="alert">
+            <AlertTriangle size={15} style={{ flexShrink: 0 }} />
+            <span>
+              Browser storage is restricted or full. Your changes will work during this session, but may not be saved after you refresh.
+            </span>
+            <button className="qg-storage-warning-dismiss" onClick={() => setStorageWarning(false)} aria-label="Dismiss warning">
+              <X size={14} />
+            </button>
+          </div>
+        )}
         {activeView === 'dashboard' && <Dashboard persona={persona} documents={documents} setView={setView} />}
         {activeView === 'library' && (
           <DocumentLibrary documents={documents} isQualityManager={isQualityManager} onAddDocument={addDocument} />

@@ -26,11 +26,19 @@ export default function NCRAssistant({ documents, feedbackEntries, onSubmitFeedb
   function validate() {
     const errs = {};
     if (!form.partNumber.trim()) errs.partNumber = 'Part number is required.';
+    else if (form.partNumber.trim().length > 120) errs.partNumber = 'Part number cannot exceed 120 characters.';
+
     if (!form.supplier.trim()) errs.supplier = 'Supplier (or "Internal") is required.';
+    else if (form.supplier.trim().length > 160) errs.supplier = 'Supplier cannot exceed 160 characters.';
+
     if (!form.issueDescription.trim()) errs.issueDescription = 'Issue description is required.';
+    else if (form.issueDescription.trim().length > 2000) errs.issueDescription = 'Issue description cannot exceed 2,000 characters.';
+
     if (!form.severity) errs.severity = 'Select a severity.';
     if (!form.detectionStage) errs.detectionStage = 'Select a detection stage.';
+
     if (!form.containmentAction.trim()) errs.containmentAction = 'Immediate containment action is required.';
+    else if (form.containmentAction.trim().length > 2000) errs.containmentAction = 'Immediate containment action cannot exceed 2,000 characters.';
 
     const qty = form.affectedQuantity.trim();
     if (!qty) {
@@ -87,6 +95,7 @@ export default function NCRAssistant({ documents, feedbackEntries, onSubmitFeedb
               <label className="qg-form-label" htmlFor="ncr-part">Part number<span className="req">*</span></label>
               <input
                 id="ncr-part"
+                maxLength={120}
                 className={`qg-form-input ${errors.partNumber ? 'err' : ''}`}
                 value={form.partNumber}
                 onChange={(e) => updateField('partNumber', e.target.value)}
@@ -98,6 +107,7 @@ export default function NCRAssistant({ documents, feedbackEntries, onSubmitFeedb
               <label className="qg-form-label" htmlFor="ncr-supplier">Supplier<span className="req">*</span></label>
               <input
                 id="ncr-supplier"
+                maxLength={160}
                 className={`qg-form-input ${errors.supplier ? 'err' : ''}`}
                 value={form.supplier}
                 onChange={(e) => updateField('supplier', e.target.value)}
@@ -136,10 +146,11 @@ export default function NCRAssistant({ documents, feedbackEntries, onSubmitFeedb
               <label className="qg-form-label" htmlFor="ncr-issue">Issue description<span className="req">*</span></label>
               <textarea
                 id="ncr-issue"
+                maxLength={2000}
                 className={`qg-form-textarea ${errors.issueDescription ? 'err' : ''}`}
                 value={form.issueDescription}
                 onChange={(e) => updateField('issueDescription', e.target.value)}
-                placeholder="Describe what was found, where, and how…"
+                placeholder="Describe what was found, where, and how… (2,000 chars max)"
               />
               {errors.issueDescription && <div className="qg-field-err">{errors.issueDescription}</div>}
             </div>
@@ -161,10 +172,11 @@ export default function NCRAssistant({ documents, feedbackEntries, onSubmitFeedb
               <label className="qg-form-label" htmlFor="ncr-containment">Immediate containment action<span className="req">*</span></label>
               <input
                 id="ncr-containment"
+                maxLength={2000}
                 className={`qg-form-input ${errors.containmentAction ? 'err' : ''}`}
                 value={form.containmentAction}
                 onChange={(e) => updateField('containmentAction', e.target.value)}
-                placeholder="e.g. Lot quarantined pending disposition"
+                placeholder="e.g. Lot quarantined pending disposition (2,000 chars max)"
               />
               {errors.containmentAction && <div className="qg-field-err">{errors.containmentAction}</div>}
             </div>

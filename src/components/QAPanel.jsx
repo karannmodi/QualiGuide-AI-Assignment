@@ -7,10 +7,16 @@ import FeedbackWidget from './FeedbackWidget.jsx';
 export default function QAPanel({ documents, feedbackEntries, onSubmitFeedback }) {
   const [question, setQuestion] = useState('');
   const [thread, setThread] = useState([]);
+  const [qaError, setQaError] = useState('');
 
   function ask(q) {
     const text = q.trim();
     if (!text) return;
+    if (text.length > 500) {
+      setQaError('Question cannot exceed 500 characters.');
+      return;
+    }
+    setQaError('');
     const doc = matchQuestion(text, documents);
     setThread([{ id: makeId(), question: text, doc }, ...thread]);
     setQuestion('');
@@ -32,15 +38,21 @@ export default function QAPanel({ documents, feedbackEntries, onSubmitFeedback }
         <div className="qg-ask-row">
           <input
             aria-label="Type your question"
+            aria-describedby={qaError ? 'qg-qa-error' : undefined}
             placeholder="e.g. What PPE is required for ESD-sensitive parts?"
+            maxLength={500}
             value={question}
-            onChange={(e) => setQuestion(e.target.value)}
+            onChange={(e) => {
+              setQuestion(e.target.value);
+              if (qaError && e.target.value.length <= 500) setQaError('');
+            }}
             onKeyDown={(e) => e.key === 'Enter' && ask(question)}
           />
           <button className="qg-ask-btn" disabled={!question.trim()} onClick={() => ask(question)}>
             <Search size={14} /> Ask
           </button>
         </div>
+        {qaError && <div id="qg-qa-error" className="qg-field-err" style={{ marginTop: 6 }}>{qaError}</div>}
         <div className="qg-chip-row">
           {SUGGESTED_QUESTIONS.map((q) => (
             <button key={q} className="qg-chip" onClick={() => ask(q)}>{q}</button>

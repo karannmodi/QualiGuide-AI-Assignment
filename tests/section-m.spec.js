@@ -89,7 +89,19 @@ test.describe('Section M: Responsive Layouts & Offline Resilience', () => {
       });
     });
 
+    // Trigger state change that writes to storage
     await page.click('button.qg-nav-item:has-text("Document Library")');
+
+    // Storage warning banner should appear
+    const banner = page.locator('.qg-storage-warning-banner');
+    await expect(banner).toBeVisible();
+    await expect(banner).toContainText('Browser storage is restricted or full');
+
+    // App remains usable in memory
     await expect(page.locator('.qg-page-title')).toHaveText('Document Library');
+
+    // Warning can be dismissed
+    await page.click('button.qg-storage-warning-dismiss');
+    await expect(banner).toHaveCount(0);
   });
 });

@@ -407,3 +407,31 @@
     .qg-ask-row input { min-width: 0; width: 100%; }
     .qg-ask-btn { width: 100%; justify-content: center; padding: 10px; }
   }
+
+  .qg-storage-warning-banner {
+    background: #FFF3CD;
+    color: #856404;
+    border: 1px solid #FFEEBA;
+    border-radius: 4px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .qg-storage-warning-dismiss {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #856404;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    border-radius: 3px;
+  }
+  .qg-storage-warning-dismiss:hover {
+    background: rgba(133, 100, 4, 0.1);
+  }

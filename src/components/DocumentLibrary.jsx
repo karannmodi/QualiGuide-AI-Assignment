@@ -66,12 +66,26 @@ function UploadDocumentModal({ onClose, onAdd }) {
   function validate() {
     const errs = {};
     if (!form.title.trim()) errs.title = 'Title is required.';
+    else if (form.title.trim().length > 120) errs.title = 'Title cannot exceed 120 characters.';
+
     if (!form.documentNumber.trim()) errs.documentNumber = 'Document number is required.';
+    else if (form.documentNumber.trim().length > 40) errs.documentNumber = 'Document number cannot exceed 40 characters.';
+
     if (!form.revision.trim()) errs.revision = 'Revision is required.';
+    else if (form.revision.trim().length > 20) errs.revision = 'Revision cannot exceed 20 characters.';
+
     if (!form.department.trim()) errs.department = 'Department is required.';
+    else if (form.department.trim().length > 80) errs.department = 'Department cannot exceed 80 characters.';
+
     if (!form.site.trim()) errs.site = 'Site is required.';
+    else if (form.site.trim().length > 80) errs.site = 'Site cannot exceed 80 characters.';
+
     if (!form.tags.trim()) errs.tags = 'At least one tag is required.';
+    else if (form.tags.trim().length > 250) errs.tags = 'Tags cannot exceed 250 characters.';
+
     if (!form.excerpt.trim()) errs.excerpt = 'A source excerpt is required.';
+    else if (form.excerpt.trim().length > 1000) errs.excerpt = 'Source excerpt cannot exceed 1,000 characters.';
+
     return errs;
   }
 
@@ -137,33 +151,33 @@ function UploadDocumentModal({ onClose, onAdd }) {
             <div className="qg-form-grid">
               <div className="qg-form-field full">
                 <label className="qg-form-label" htmlFor="up-title">Title<span className="req">*</span></label>
-                <input id="up-title" className={`qg-form-input ${errors.title ? 'err' : ''}`} value={form.title}
-                  onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. Torque Verification Work Instruction" />
+                <input id="up-title" maxLength={120} className={`qg-form-input ${errors.title ? 'err' : ''}`} value={form.title}
+                  onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. Torque Verification Work Instruction (120 chars max)" />
                 {errors.title && <div className="qg-field-err">{errors.title}</div>}
               </div>
 
               <div className="qg-form-field">
                 <label className="qg-form-label" htmlFor="up-docnum">Document number<span className="req">*</span></label>
-                <input id="up-docnum" className={`qg-form-input ${errors.documentNumber ? 'err' : ''}`} value={form.documentNumber}
+                <input id="up-docnum" maxLength={40} className={`qg-form-input ${errors.documentNumber ? 'err' : ''}`} value={form.documentNumber}
                   onChange={(e) => updateField('documentNumber', e.target.value)} placeholder="e.g. WI-3312" />
                 {errors.documentNumber && <div className="qg-field-err">{errors.documentNumber}</div>}
               </div>
               <div className="qg-form-field">
                 <label className="qg-form-label" htmlFor="up-revision">Revision<span className="req">*</span></label>
-                <input id="up-revision" className={`qg-form-input ${errors.revision ? 'err' : ''}`} value={form.revision}
+                <input id="up-revision" maxLength={20} className={`qg-form-input ${errors.revision ? 'err' : ''}`} value={form.revision}
                   onChange={(e) => updateField('revision', e.target.value)} placeholder="e.g. A" />
                 {errors.revision && <div className="qg-field-err">{errors.revision}</div>}
               </div>
 
               <div className="qg-form-field">
                 <label className="qg-form-label" htmlFor="up-department">Department<span className="req">*</span></label>
-                <input id="up-department" className={`qg-form-input ${errors.department ? 'err' : ''}`} value={form.department}
+                <input id="up-department" maxLength={80} className={`qg-form-input ${errors.department ? 'err' : ''}`} value={form.department}
                   onChange={(e) => updateField('department', e.target.value)} placeholder="e.g. Quality" />
                 {errors.department && <div className="qg-field-err">{errors.department}</div>}
               </div>
               <div className="qg-form-field">
                 <label className="qg-form-label" htmlFor="up-site">Site<span className="req">*</span></label>
-                <input id="up-site" className={`qg-form-input ${errors.site ? 'err' : ''}`} value={form.site}
+                <input id="up-site" maxLength={80} className={`qg-form-input ${errors.site ? 'err' : ''}`} value={form.site}
                   onChange={(e) => updateField('site', e.target.value)} placeholder="e.g. Plant 1" />
                 {errors.site && <div className="qg-field-err">{errors.site}</div>}
               </div>
@@ -177,14 +191,14 @@ function UploadDocumentModal({ onClose, onAdd }) {
               </div>
               <div className="qg-form-field">
                 <label className="qg-form-label" htmlFor="up-tags">Tags (comma separated)<span className="req">*</span></label>
-                <input id="up-tags" className={`qg-form-input ${errors.tags ? 'err' : ''}`} value={form.tags}
+                <input id="up-tags" maxLength={250} className={`qg-form-input ${errors.tags ? 'err' : ''}`} value={form.tags}
                   onChange={(e) => updateField('tags', e.target.value)} placeholder="e.g. torque, assembly, checklist" />
                 {errors.tags && <div className="qg-field-err">{errors.tags}</div>}
               </div>
 
               <div className="qg-form-field full">
                 <label className="qg-form-label" htmlFor="up-excerpt">Source excerpt<span className="req">*</span></label>
-                <textarea id="up-excerpt" className={`qg-form-textarea ${errors.excerpt ? 'err' : ''}`} value={form.excerpt}
+                <textarea id="up-excerpt" maxLength={1000} className={`qg-form-textarea ${errors.excerpt ? 'err' : ''}`} value={form.excerpt}
                   onChange={(e) => updateField('excerpt', e.target.value)} placeholder="A short passage this document would be cited from…" />
                 {errors.excerpt && <div className="qg-field-err">{errors.excerpt}</div>}
               </div>

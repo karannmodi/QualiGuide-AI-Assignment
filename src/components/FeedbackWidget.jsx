@@ -6,6 +6,7 @@ import { makeId } from '../utils/qualiguide.js';
 export default function FeedbackWidget({ resultId, resultType, contextLabel, entries, onSubmit }) {
   const [pendingRating, setPendingRating] = useState(null);
   const [comment, setComment] = useState('');
+  const [fbError, setFbError] = useState('');
 
   const existing = entries.find((e) => e.resultId === resultId);
 
@@ -23,6 +24,11 @@ export default function FeedbackWidget({ resultId, resultType, contextLabel, ent
 
   function submit() {
     if (!pendingRating) return;
+    if (comment.trim().length > 1000) {
+      setFbError('Comment cannot exceed 1,000 characters.');
+      return;
+    }
+    setFbError('');
     onSubmit({
       id: makeId(),
       resultId,
@@ -56,10 +62,15 @@ export default function FeedbackWidget({ resultId, resultType, contextLabel, ent
           <textarea
             aria-label="Optional feedback comment"
             className="qg-feedback-comment"
-            placeholder="Optional comment…"
+            maxLength={1000}
+            placeholder="Optional comment… (1,000 chars max)"
             value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            onChange={(e) => {
+              setComment(e.target.value);
+              if (fbError && e.target.value.length <= 1000) setFbError('');
+            }}
           />
+          {fbError && <div className="qg-field-err" style={{ marginTop: 4 }}>{fbError}</div>}
           <button className="qg-feedback-submit" onClick={submit}>Submit feedback</button>
         </>
       )}
