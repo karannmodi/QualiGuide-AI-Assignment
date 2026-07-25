@@ -1,0 +1,14 @@
+QUALIGUIDE AI MIGRATION PACKAGE
+
+This package is intended to be extracted into your existing
+QualiGuide-AI-Local-Assignment folder.
+
+It contains:
+- A new multi-file src folder
+- Updated index.html
+- README.md
+- MIGRATION_NOTES.md
+- The original reference/ClaudeArtifact.jsx
+
+It does NOT replace package.json, package-lock.json, node_modules, or vite.config.js.
+Your existing Vite project and installed lucide-react dependency remain in place.
